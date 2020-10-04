@@ -2,7 +2,7 @@ function caesarEncoder(string = '', shift = 0, action = 'encode') {
 	const coderArray = [];
 	shift = +shift % 26;
 	if (action === 'decode') shift = -shift;
-console.log(string)
+
 	for(let char of string) {
 		let charCode = char.charCodeAt();
 

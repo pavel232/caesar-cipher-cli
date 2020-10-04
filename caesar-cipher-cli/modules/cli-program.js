@@ -37,11 +37,11 @@ function encodeCli(callback) {
 
 if(action !== 'encode' && action !== 'decode') {
 	console.error('Error: invalid -a --action parameter (must be "encode" or "decode")');
-	process.exit(0);
+	process.exit(1);
 }
 if(shift < 0) {
 	console.error('Error: invalid -s --shift parameter (must be a positive number)');
-	process.exit(0);
+	process.exit(1);
 }
 
 module.exports = {input, output, shift, action, encodeCli};
