@@ -4,6 +4,13 @@ const path = require('path');
 
 function encodeFile(input, output, shift, action, caesarEncoder) {
   const inputFile = path.resolve(input);
+
+  fs.access(inputFile, fs.constants.R_OK, err => {
+    if(err) {
+      process.stderr.write(`Error: file ${err.path} does not exist or not readable\n`);
+      process.exit(2);
+    }
+  });
   const read = fs.createReadStream(inputFile, 'utf-8');
 
   if(output) {
