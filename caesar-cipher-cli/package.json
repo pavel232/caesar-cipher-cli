@@ -1,8 +1,8 @@
 {
-  "name": "./caesar-cipher-cli/caesar-cipher-cli",
+  "name": "caesar-cipher-cli",
   "version": "1.0.0",
   "description": "Caesar Cipher",
-  "main": "",
+  "main": "caesar-cipher-cli",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
