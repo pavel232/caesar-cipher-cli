@@ -1,61 +1,56 @@
 const { pipeline, Transform } = require('stream');
 const fs = require('fs');
 const path = require('path');
+const errorHandler = require('./error-handler');
 
-function encodeFile(input, output, shift, action, caesarEncoder) {
-  const inputFile = path.resolve(input);
 
-  fs.access(inputFile, fs.constants.R_OK, err => {
-    if(err) {
-      process.stderr.write(`Error: file ${err.path} does not exist or not readable\n`);
-      process.exit(2);
+function encoder(input, output, shift, action, caesarEncoder) {
+  const readStream = getReadStream(input);
+  const writeStream = getWriteStream(output);
+
+
+  const transformStream = new Transform ({
+    transform(chunk, encoding, callback) {
+      this.push(caesarEncoder(chunk.toString(), shift, action));
+      callback();
     }
   });
-  const read = fs.createReadStream(inputFile, 'utf-8');
-
-  if(output) {
-    const outputFile = path.resolve(output);
-
-    fs.access(outputFile, fs.constants.W_OK, err => {
+  
+  pipeline(
+    readStream,
+    transformStream,
+    writeStream,
+    err => {
       if(err) {
-        process.stderr.write(`Error: file ${err.path} does not exist or not writable\n`);
-        process.exit(2);
-      } else {
-        const write = fs.createWriteStream(outputFile, {
-          flags: 'a'
-        });
-
-        const transformStream = new Transform ({
-          transform(chunk, encoding, callback) {
-            const str = new TextDecoder().decode(chunk);
-            this.push(caesarEncoder(str, shift, action));
-            callback();
-          }
-        });
-
-        pipeline(
-          read,
-          transformStream,
-          write,
-          err => {
-            if(err) {
-              process.stderr.write(`Error: unknown error(${err.code})\n`);
-              process.exit(3);
-            }
-          }
-        );
-
-        write.on('finish', () => {
-          process.exit(0);
-        })
+        errorHandler(err, 3);
       }
-    });
-  } else {
-    read.on('data', data => {
-      process.stdout.write(caesarEncoder(data, shift, action));
-      process.exit(0);
-    });
-  };
+    }
+  );
 }
 
-module.exports = encodeFile;
+
+function getReadStream(input) {
+  if(input) {
+    const inputFile = path.resolve(input);
+    return fs.createReadStream(inputFile, 'utf-8');
+  } else {
+    return process.stdin;
+  }
+}
+
+function getWriteStream(output) {
+  if(output) {
+    const outputFile = path.resolve(output);
+    try {
+      fs.accessSync(output, fs.constants.W_OK);
+      return fs.createWriteStream(outputFile, {flags: 'a'});
+    } catch(err) {
+      errorHandler(err, 4);
+    }
+  } else {
+    return process.stdout;
+  }
+}
+
+
+module.exports = encoder;
