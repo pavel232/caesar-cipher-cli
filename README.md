@@ -2,8 +2,12 @@
 
 ## How to install:
 1. Clone this repository
-2. Go to caesar-cipher-cli folder
-3. Run command:
+```bash 
+  $ git clone git@github.com:pavel232/caesar-cipher-cli.git
+```
+2. Go to repository folder
+3. Go to caesar-cipher-cli folder
+4. Run command:
 ```bash 
   $ npm install
 ```
@@ -16,9 +20,20 @@ CLI tool accept 4 options (short alias and full name):
 3.  **-i, --input**: an input file
 4.  **-o, --output**: an output file
 
+If -i or -o options are empty the program will encode strings from the command line
+
+## Run program:
+Command:
 ```bash
-$ node my_caesar_cli -a encode -s 7 -i "./input.txt" -o "./output.txt"
+$ node caesar-cipher-cli -a encode -s 7
 ```
+means the program will encode strings from the command line. Program will continue to work.
+
+Command:
+```bash
+$ node caesar-cipher-cli -a decode -s 5 -i ./input.txt -o ./output.txt
+```
+means the program decode all strings from input.txt and write their in output.txt. Program will stop running.
 
 
 ## Task description:
